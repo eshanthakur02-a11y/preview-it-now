@@ -83,6 +83,7 @@ import { Route as AccountantPaymentsRouteImport } from './routes/accountant.paym
 import { Route as AccountantInvoicesRouteImport } from './routes/accountant.invoices'
 import { Route as AccountantFeesRouteImport } from './routes/accountant.fees'
 import { Route as TeacherHomeworkIdRouteImport } from './routes/teacher.homework.$id'
+import { Route as ApiPublicSeedDemoRouteImport } from './routes/api/public/seed-demo'
 import { Route as AdminExamsIdRouteImport } from './routes/admin.exams.$id'
 
 const TransportRoute = TransportRouteImport.update({
@@ -455,6 +456,11 @@ const TeacherHomeworkIdRoute = TeacherHomeworkIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => TeacherHomeworkRoute,
 } as any)
+const ApiPublicSeedDemoRoute = ApiPublicSeedDemoRouteImport.update({
+  id: '/api/public/seed-demo',
+  path: '/api/public/seed-demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminExamsIdRoute = AdminExamsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -536,6 +542,7 @@ export interface FileRoutesByFullPath {
   '/teacher/': typeof TeacherIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/admin/exams/$id': typeof AdminExamsIdRoute
+  '/api/public/seed-demo': typeof ApiPublicSeedDemoRoute
   '/teacher/homework/$id': typeof TeacherHomeworkIdRoute
 }
 export interface FileRoutesByTo {
@@ -606,6 +613,7 @@ export interface FileRoutesByTo {
   '/teacher': typeof TeacherIndexRoute
   '/transport': typeof TransportIndexRoute
   '/admin/exams/$id': typeof AdminExamsIdRoute
+  '/api/public/seed-demo': typeof ApiPublicSeedDemoRoute
   '/teacher/homework/$id': typeof TeacherHomeworkIdRoute
 }
 export interface FileRoutesById {
@@ -684,6 +692,7 @@ export interface FileRoutesById {
   '/teacher/': typeof TeacherIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/admin/exams/$id': typeof AdminExamsIdRoute
+  '/api/public/seed-demo': typeof ApiPublicSeedDemoRoute
   '/teacher/homework/$id': typeof TeacherHomeworkIdRoute
 }
 export interface FileRouteTypes {
@@ -763,6 +772,7 @@ export interface FileRouteTypes {
     | '/teacher/'
     | '/transport/'
     | '/admin/exams/$id'
+    | '/api/public/seed-demo'
     | '/teacher/homework/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -833,6 +843,7 @@ export interface FileRouteTypes {
     | '/teacher'
     | '/transport'
     | '/admin/exams/$id'
+    | '/api/public/seed-demo'
     | '/teacher/homework/$id'
   id:
     | '__root__'
@@ -910,6 +921,7 @@ export interface FileRouteTypes {
     | '/teacher/'
     | '/transport/'
     | '/admin/exams/$id'
+    | '/api/public/seed-demo'
     | '/teacher/homework/$id'
   fileRoutesById: FileRoutesById
 }
@@ -933,6 +945,7 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   ApiN8nChatRoute: typeof ApiN8nChatRoute
   ApiN8nFetchRoute: typeof ApiN8nFetchRoute
+  ApiPublicSeedDemoRoute: typeof ApiPublicSeedDemoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1455,6 +1468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherHomeworkIdRouteImport
       parentRoute: typeof TeacherHomeworkRoute
     }
+    '/api/public/seed-demo': {
+      id: '/api/public/seed-demo'
+      path: '/api/public/seed-demo'
+      fullPath: '/api/public/seed-demo'
+      preLoaderRoute: typeof ApiPublicSeedDemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/exams/$id': {
       id: '/admin/exams/$id'
       path: '/$id'
@@ -1682,7 +1702,18 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   ApiN8nChatRoute: ApiN8nChatRoute,
   ApiN8nFetchRoute: ApiN8nFetchRoute,
+  ApiPublicSeedDemoRoute: ApiPublicSeedDemoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
