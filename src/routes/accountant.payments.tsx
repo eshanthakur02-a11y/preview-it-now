@@ -18,7 +18,7 @@ function Page() {
       .select("id,title,paid,status,updated_at,students(full_name,admission_no)")
       .gt("paid", 0).order("updated_at", { ascending: false }).limit(500);
     type Raw = { id: string; title: string; paid: number; status: string; updated_at: string; students: { full_name: string; admission_no: string | null } | null };
-    setRows(((data ?? []) as Raw[]).map((r) => ({
+    setRows(((data ?? []) as unknown as Raw[]).map((r) => ({
       id: r.id, title: r.title, paid: r.paid, status: r.status, updated_at: r.updated_at,
       student: r.students?.full_name, adm: r.students?.admission_no ?? "",
     })));

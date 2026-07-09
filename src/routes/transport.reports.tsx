@@ -24,7 +24,7 @@ function Page() {
         supabase.from("transport_routes").select("id", { count: "exact", head: true }),
       ]);
       return {
-        assignments: (a.data ?? []) as Assignment[],
+        assignments: (a.data ?? []) as unknown as Assignment[],
         drivers: (d.data ?? []) as DriverRow[],
         vehicles: v.count ?? 0, routes: r.count ?? 0,
       };
