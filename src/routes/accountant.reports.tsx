@@ -19,7 +19,7 @@ function Page() {
       const { data } = await supabase.from("fee_invoices")
         .select("amount,discount,fine,paid,status,updated_at,due_date,title,students(full_name,admission_no)")
         .order("updated_at", { ascending: false }).limit(2000);
-      return (data ?? []) as Inv[];
+      return (data ?? []) as unknown as Inv[];
     },
   });
   const rows = data ?? [];

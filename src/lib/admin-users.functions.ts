@@ -153,7 +153,7 @@ export const createStudentWithParent = createServerFn({ method: "POST" })
       studentEmail = data.student_email ?? `${data.admission_no.toLowerCase()}.${slug}@${STUDENT_EMAIL_DOMAIN}`;
       studentTempPw = cryptoRandomPassword();
       const { data: created, error: sErr } = await supabaseAdmin.auth.admin.createUser({
-        email: studentEmail,
+        email: studentEmail!,
         password: studentTempPw,
         email_confirm: true,
         user_metadata: { full_name: data.student_full_name, role: "student", school_id: schoolId },
