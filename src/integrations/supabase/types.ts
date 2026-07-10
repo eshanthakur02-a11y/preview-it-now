@@ -155,6 +155,7 @@ export type Database = {
         Row: {
           action: string
           actor_id: string | null
+          actor_user_id: string | null
           created_at: string
           entity: string | null
           entity_id: string | null
@@ -165,6 +166,7 @@ export type Database = {
         Insert: {
           action: string
           actor_id?: string | null
+          actor_user_id?: string | null
           created_at?: string
           entity?: string | null
           entity_id?: string | null
@@ -175,6 +177,7 @@ export type Database = {
         Update: {
           action?: string
           actor_id?: string | null
+          actor_user_id?: string | null
           created_at?: string
           entity?: string | null
           entity_id?: string | null
@@ -254,9 +257,13 @@ export type Database = {
         Row: {
           book_id: string | null
           borrowed_at: string
+          borrower_role: string | null
+          borrower_user_id: string | null
           created_at: string
           due_at: string | null
+          fine_amount: number
           id: string
+          issued_at: string | null
           returned_at: string | null
           school_id: string | null
           status: string
@@ -265,9 +272,13 @@ export type Database = {
         Insert: {
           book_id?: string | null
           borrowed_at?: string
+          borrower_role?: string | null
+          borrower_user_id?: string | null
           created_at?: string
           due_at?: string | null
+          fine_amount?: number
           id?: string
+          issued_at?: string | null
           returned_at?: string | null
           school_id?: string | null
           status?: string
@@ -276,9 +287,13 @@ export type Database = {
         Update: {
           book_id?: string | null
           borrowed_at?: string
+          borrower_role?: string | null
+          borrower_user_id?: string | null
           created_at?: string
           due_at?: string | null
+          fine_amount?: number
           id?: string
+          issued_at?: string | null
           returned_at?: string | null
           school_id?: string | null
           status?: string
@@ -290,6 +305,13 @@ export type Database = {
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_loans_borrower_user_id_fkey"
+            columns: ["borrower_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -595,6 +617,88 @@ export type Database = {
           },
         ]
       }
+      fee_discounts: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          name: string
+          school_id: string | null
+          status: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          name: string
+          school_id?: string | null
+          status?: string
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          name?: string
+          school_id?: string | null
+          status?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fee_discounts_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fee_fines: {
+        Row: {
+          created_at: string
+          grace_days: number
+          id: string
+          name: string
+          per_day_amount: number
+          school_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          grace_days?: number
+          id?: string
+          name: string
+          per_day_amount?: number
+          school_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          grace_days?: number
+          id?: string
+          name?: string
+          per_day_amount?: number
+          school_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fee_fines_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fee_invoices: {
         Row: {
           amount: number
@@ -608,7 +712,9 @@ export type Database = {
           paid_amount: number | null
           school_id: string | null
           status: string
+          structure_id: string | null
           student_id: string | null
+          title: string
           updated_at: string
         }
         Insert: {
@@ -623,7 +729,9 @@ export type Database = {
           paid_amount?: number | null
           school_id?: string | null
           status?: string
+          structure_id?: string | null
           student_id?: string | null
+          title?: string
           updated_at?: string
         }
         Update: {
@@ -638,7 +746,9 @@ export type Database = {
           paid_amount?: number | null
           school_id?: string | null
           status?: string
+          structure_id?: string | null
           student_id?: string | null
+          title?: string
           updated_at?: string
         }
         Relationships: [
@@ -647,6 +757,13 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fee_invoices_structure_id_fkey"
+            columns: ["structure_id"]
+            isOneToOne: false
+            referencedRelation: "fee_structures"
             referencedColumns: ["id"]
           },
           {
@@ -661,33 +778,45 @@ export type Database = {
       fee_payments: {
         Row: {
           amount: number
+          amount_paid: number | null
           created_at: string
+          fee_id: string | null
           id: string
           invoice_id: string | null
           method: string | null
           note: string | null
           paid_at: string
+          reference: string | null
           school_id: string | null
+          student_id: string | null
         }
         Insert: {
           amount?: number
+          amount_paid?: number | null
           created_at?: string
+          fee_id?: string | null
           id?: string
           invoice_id?: string | null
           method?: string | null
           note?: string | null
           paid_at?: string
+          reference?: string | null
           school_id?: string | null
+          student_id?: string | null
         }
         Update: {
           amount?: number
+          amount_paid?: number | null
           created_at?: string
+          fee_id?: string | null
           id?: string
           invoice_id?: string | null
           method?: string | null
           note?: string | null
           paid_at?: string
+          reference?: string | null
           school_id?: string | null
+          student_id?: string | null
         }
         Relationships: [
           {
@@ -704,6 +833,13 @@ export type Database = {
             referencedRelation: "schools"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fee_payments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
         ]
       }
       fee_structures: {
@@ -711,28 +847,34 @@ export type Database = {
           amount: number
           class_id: string | null
           created_at: string
+          due_day: number | null
           frequency: string | null
           id: string
           name: string
           school_id: string | null
+          status: string
         }
         Insert: {
           amount?: number
           class_id?: string | null
           created_at?: string
+          due_day?: number | null
           frequency?: string | null
           id?: string
           name: string
           school_id?: string | null
+          status?: string
         }
         Update: {
           amount?: number
           class_id?: string | null
           created_at?: string
+          due_day?: number | null
           frequency?: string | null
           id?: string
           name?: string
           school_id?: string | null
+          status?: string
         }
         Relationships: [
           {
@@ -753,8 +895,10 @@ export type Database = {
       }
       homework: {
         Row: {
+          attachments: Json
           class_id: string | null
           created_at: string
+          created_by: string | null
           description: string | null
           due_date: string | null
           id: string
@@ -767,8 +911,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attachments?: Json
           class_id?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           due_date?: string | null
           id?: string
@@ -781,8 +927,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attachments?: Json
           class_id?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           due_date?: string | null
           id?: string
@@ -834,10 +982,13 @@ export type Database = {
       }
       homework_submissions: {
         Row: {
+          attachments: Json
           created_at: string
+          feedback: string | null
           grade: string | null
           homework_id: string | null
           id: string
+          marks: number | null
           note: string | null
           school_id: string | null
           status: string | null
@@ -846,10 +997,13 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attachments?: Json
           created_at?: string
+          feedback?: string | null
           grade?: string | null
           homework_id?: string | null
           id?: string
+          marks?: number | null
           note?: string | null
           school_id?: string | null
           status?: string | null
@@ -858,10 +1012,13 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attachments?: Json
           created_at?: string
+          feedback?: string | null
           grade?: string | null
           homework_id?: string | null
           id?: string
+          marks?: number | null
           note?: string | null
           school_id?: string | null
           status?: string | null
@@ -925,6 +1082,7 @@ export type Database = {
           body: string | null
           created_at: string
           id: string
+          kind: string
           link: string | null
           read_at: string | null
           title: string
@@ -934,6 +1092,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          kind?: string
           link?: string | null
           read_at?: string | null
           title: string
@@ -943,6 +1102,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          kind?: string
           link?: string | null
           read_at?: string | null
           title?: string
@@ -1758,6 +1918,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_notification: {
+        Args: {
+          _body?: string
+          _kind?: string
+          _link?: string
+          _school_id?: string
+          _title?: string
+          _user_id: string
+        }
+        Returns: string
+      }
       current_school_id: { Args: never; Returns: string }
       delete_class_if_unreferenced: {
         Args: { _id: string }
@@ -1766,6 +1937,10 @@ export type Database = {
       delete_section_if_unreferenced: {
         Args: { _id: string }
         Returns: undefined
+      }
+      generate_invoices_for_structure: {
+        Args: { _due_date?: string; _structure_id: string }
+        Returns: number
       }
       get_user_school: { Args: { _user_id: string }; Returns: string }
       has_role: {
@@ -1776,18 +1951,39 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      issue_book: {
+        Args: {
+          _book_id: string
+          _borrower_role: string
+          _borrower_user_id: string
+          _due_at: string
+        }
+        Returns: string
+      }
       log_audit: {
         Args: {
           _action: string
-          _entity: string
-          _entity_id: string
-          _meta: Json
-          _school_id: string
+          _entity?: string
+          _entity_id?: string
+          _meta?: Json
+          _school_id?: string
         }
         Returns: undefined
       }
       mark_all_notifications_read: { Args: never; Returns: undefined }
+      mark_attendance_bulk: {
+        Args: { _date: string; _entries: Json; _section_id: string }
+        Returns: number
+      }
+      return_book: {
+        Args: { _fine_per_day?: number; _loan_id: string }
+        Returns: undefined
+      }
       set_current_session: { Args: { _session_id: string }; Returns: undefined }
+      set_exam_published: {
+        Args: { _exam_id: string; _published: boolean }
+        Returns: undefined
+      }
     }
     Enums: {
       account_status: "invited" | "active" | "suspended"
